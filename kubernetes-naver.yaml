@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-eng
+  namespace: dev-eng
+  labels:
+    app: english
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: english
+  template:
+    metadata:
+      labels:
+        app: english
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: dev-eng
+        image: qd5x9l8o.private-ncr.gov-ntruss.com/miraen-eng-eval-engine:0.1.0
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - mountPath: /etc/localtime
+          name: tz-seoul
+        - mountPath: /app
+          name: pv-dev-eng
+      volumes:
+      - name: pv-dev-eng
+        persistentVolumeClaim:
+          claimName: pvc-dev-eng
+      - name: tz-seoul
+        hostPath:
+          path: /usr/share/zoneinfo/Asia/Seoul
+          type: ""
